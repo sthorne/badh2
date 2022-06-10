@@ -1832,8 +1832,8 @@ func (rl *clientConnReadLoop) run() error {
 			err = rl.processData(f)
 			maybeIdle = true
 		case *GoAwayFrame:
-			err = rl.processGoAway(f)
-			maybeIdle = true
+			//err = rl.processGoAway(f)
+			//maybeIdle = true
 		case *RSTStreamFrame:
 			err = rl.processResetStream(f)
 			maybeIdle = true
