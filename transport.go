@@ -130,6 +130,18 @@ type Transport struct {
 	connPoolOrDef ClientConnPool // non-nil version of ConnPool
 }
 
+func (t *Transport) SetDebugLogging(debug bool) {
+	if debug {
+		VerboseLogs = true
+		logFrameWrites = true
+		logFrameReads = true
+	} else {
+		VerboseLogs = false
+		logFrameWrites = false
+		logFrameReads = false
+	}
+}
+
 func (t *Transport) maxHeaderListSize() uint32 {
 	if t.MaxHeaderListSize == 0 {
 		return 10 << 20
