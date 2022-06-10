@@ -39,6 +39,11 @@ var (
 )
 
 func init() {
+
+	VerboseLogs = true
+	logFrameWrites = true
+	logFrameReads = true
+
 	e := os.Getenv("GODEBUG")
 	if strings.Contains(e, "http2debug=1") {
 		VerboseLogs = true
@@ -48,6 +53,7 @@ func init() {
 		logFrameWrites = true
 		logFrameReads = true
 	}
+
 }
 
 const (
