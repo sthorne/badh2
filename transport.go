@@ -2312,7 +2312,7 @@ func (rl *clientConnReadLoop) processGoAway(f *GoAwayFrame) error {
 	cc.t.connPool().MarkDead(cc)
 	if f.ErrCode != 0 {
 		// TODO: deal with GOAWAY more. particularly the error code
-		cc.vlogf("transport got GOAWAY with error code = %v", f.ErrCode)
+		cc.vlogf("transport %p got GOAWAY with error code = %v", cc, f.ErrCode)
 	}
 	cc.setGoAway(f)
 	return nil
