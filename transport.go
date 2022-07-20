@@ -128,6 +128,11 @@ type Transport struct {
 
 	connPoolOnce  sync.Once
 	connPoolOrDef ClientConnPool // non-nil version of ConnPool
+
+	// Set Below Flag To Ignore GOAWAY Signals Sent by Servers.
+	IgnoreGoAway bool
+	// Set Below Flag To Add Additional Logs Specific to GOAWAY and NewConnections
+	ConnectionLog bool
 }
 
 func (t *Transport) SetDebugLogging(debug bool) {
@@ -658,6 +663,9 @@ func (t *Transport) newClientConn(c net.Conn, singleUse bool) (*ClientConn, erro
 	if d := t.idleConnTimeout(); d != 0 {
 		cc.idleTimeout = d
 		cc.idleTimer = time.AfterFunc(d, cc.onIdleTimeout)
+	}
+	if t.ConnectionLog {
+		t.logf("[Connection-Log] http2: Transport creating client conn %p to %v", cc, c.RemoteAddr())
 	}
 	if VerboseLogs {
 		t.vlogf("http2: Transport creating client conn %p to %v", cc, c.RemoteAddr())
@@ -1844,7 +1852,12 @@ func (rl *clientConnReadLoop) run() error {
 			err = rl.processData(f)
 			maybeIdle = true
 		case *GoAwayFrame:
-			//err = rl.processGoAway(f)
+			if cc.t.ConnectionLog {
+				cc.t.logf("[Connection-Log] http2: Transport got GOAWAY LastStreamID=%v ErrCode = %v Debug=%q", f.LastStreamID, f.ErrCode, f.debugData)
+			}
+			if !cc.t.IgnoreGoAway {
+				err = rl.processGoAway(f)
+			}
 			//maybeIdle = true
 		case *RSTStreamFrame:
 			err = rl.processResetStream(f)
