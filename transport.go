@@ -189,12 +189,15 @@ func configureTransport(t1 *http.Transport) (*Transport, error) {
 	if t1.TLSClientConfig == nil {
 		t1.TLSClientConfig = new(tls.Config)
 	}
+	/*
+	We only want to use previously added ALPNS
 	if !strSliceContains(t1.TLSClientConfig.NextProtos, "h2") {
 		t1.TLSClientConfig.NextProtos = append([]string{"h2"}, t1.TLSClientConfig.NextProtos...)
 	}
 	if !strSliceContains(t1.TLSClientConfig.NextProtos, "http/1.1") {
 		t1.TLSClientConfig.NextProtos = append(t1.TLSClientConfig.NextProtos, "http/1.1")
 	}
+	*/
 	upgradeFn := func(authority string, c *tls.Conn) http.RoundTripper {
 		addr := authorityAddr("https", authority)
 		if used, err := connPool.addConnIfNeeded(addr, t2, c); err != nil {
